@@ -1,0 +1,85 @@
+/* src/pages/AuthForm.css */
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #121212;
+}
+
+.auth-box {
+  background-color: rgba(31, 31, 31, 0.85); /* Slightly transparent */
+  padding: 40px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px); /* "Frosted glass" effect */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1; /* Make sure it's on top of the overlay */
+}
+
+.auth-box h2 {
+  color: #FFFFFF;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  color: #E0E0E0;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-size: 1rem;
+  box-sizing: border-box; /* Important fix */
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #FF7A00;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 14px;
+  background-color: #FF7A00;
+  border: none;
+  border-radius: 8px;
+  color: #121212;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.auth-button:hover {
+  background-color: #ff9a40;
+}
+
+.back-to-home {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #E0E0E0;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-to-home:hover {
+    color: #FF7A00;
+}

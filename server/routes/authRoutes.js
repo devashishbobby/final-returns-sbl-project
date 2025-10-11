@@ -1,0 +1,118 @@
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcrypt'); // Corrected to bcryptjs which we installed
+const User = require('../models/User'); // Import the User model
+const jwt = require('jsonwebtoken');
+
+// @route   POST /api/auth/register
+// @desc    Register a new user
+// @access  Public
+router.post('/register', async (req, res) => {
+    try {
+        // 1. Get user data from the request body
+        const { name, email, password } = req.body;
+
+        // 2. Check if user already exists
+        let user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        // 3. Create a new user instance
+        user = new User({
+            name,
+            email,
+            password,
+        });
+
+        // 4. Hash the password before saving
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+
+        // 5. Save the user to the database
+        await user.save();
+
+        // 6. Send a success response
+        res.status(201).json({ message: 'User registered successfully' });
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// @route   POST /api/auth/login
+// @desc    Authenticate user & get token
+// @access  Public
+// In server/routes/authRoutes.js
+router.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ message: 'Invalid Credentials' });
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ message: 'Invalid Credentials' });
+
+        const payload = { user: { id: user.id } };
+
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET, // This will now have the correct value
+            { expiresIn: '5h' },
+            (err, token) => {
+                if (err) throw err;
+                res.json({ token });
+            }
+        );
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// --- PASTE THIS ENTIRE BLOCK INTO YOUR FILE ---
+
+const authMiddleware = require('../middleware/authMiddleware');
+
+// @route   GET /api/auth/me
+// @desc    Get logged in user's data (except password)
+// @access  Private
+router.get('/me', authMiddleware, async (req, res) => {
+    try {
+        // req.user.id is attached by the authMiddleware from the token
+        const user = await User.findById(req.user.id).select('-password');
+        res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.put('/settings', authMiddleware, async (req, res) => {
+  const { focus, shortBreak, longBreak } = req.body;
+
+  try {
+    // The user's ID is available from the authMiddleware (req.user.id)
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    // Update the settings object
+    user.settings = { focus, shortBreak, longBreak };
+
+    // Save the updated user document to the database
+    await user.save();
+
+    // Send back the newly saved settings
+    res.json(user.settings);
+
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+module.exports = router;

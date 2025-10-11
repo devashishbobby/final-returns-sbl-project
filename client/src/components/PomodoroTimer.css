@@ -1,0 +1,69 @@
+/* src/components/PomodoroTimer.css */
+.pomodoro-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+.timer-modes {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.mode-btn {
+  background: none;
+  border: 1px solid #444;
+  color: #aaa;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.mode-btn:hover {
+    border-color: #666;
+    color: #E0E0E0;
+}
+
+.mode-btn.active {
+  background-color: #444;
+  color: #E0E0E0;
+  border-color: #444;
+}
+
+.timer-display {
+  font-size: 6rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #FFFFFF;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.control-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 120px; /* Ensures the button doesn't change size between Start/Pause */
+}
+
+.start-btn {
+  background-color: #FF7A00;
+  color: #121212;
+}
+
+/* Add this to the bottom of PomodoroTimer.css */
+.session-counter {
+  margin-top: 1rem;
+  color: #aaa;
+  font-size: 0.9rem;
+}

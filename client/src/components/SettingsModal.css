@@ -1,0 +1,35 @@
+/* src/components/SettingsModal.css */
+/* We can re-use most styles from AddTaskModal for consistency */
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.settings-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.settings-form label {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.settings-form input {
+  width: 100%;
+  padding: 12px;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.settings-form input:focus {
+  outline: none;
+  border-color: #FF7A00;
+}

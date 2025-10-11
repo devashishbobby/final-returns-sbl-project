@@ -1,0 +1,65 @@
+/* src/components/Navbar.css -- FINAL DEFINITIVE VERSION */
+
+.navbar {
+  background: #121212;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.1rem;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  border-bottom: 1px solid #1f1f1f;
+}
+
+/* THIS IS THE MOST IMPORTANT RULE FOR LAYOUT */
+.navbar-container {
+  display: flex;
+  justify-content: space-between; /* This pushes logo left & links right */
+  align-items: center;
+  height: 80px;
+  width: 100%;
+  padding: 0 24px;
+  max-width: 1100px;
+}
+
+.navbar-logo {
+  color: #FF7A00;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+/* This styles the container for all the links/buttons on the right */
+.nav-right-side {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* This creates space BETWEEN the links */
+}
+
+/* General styling for ALL links in the navbar */
+.nav-links {
+  color: #E0E0E0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease-out;
+}
+
+.nav-links:hover {
+  color: #FF7A00;
+}
+
+/* Special style for the link that is currently active */
+.nav-links.active {
+  color: #FF7A00;
+}
+
+/* The hover effect for the "Register" button, including our glow animation */
+.nav-btn-register:hover {
+    background-color: #FF7A00;
+    color: #121212;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 122, 0, 0.6);
+}
