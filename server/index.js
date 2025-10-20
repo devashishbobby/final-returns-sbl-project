@@ -16,7 +16,7 @@ connectDB();
 
 // 5. Configure Middleware
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: 'https://final-returns-sbl-project.vercel.app/',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
