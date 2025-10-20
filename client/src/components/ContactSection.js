@@ -23,7 +23,7 @@ const ContactSection = () => {
 
     try {
       const body = { name, email, message };
-      const res = await axios.post('http://localhost:5001/api/contact', body);
+      const res = await axios.post('https://final-returns-sbl-project.vercel.app/contact', body);
       setStatusMessage(res.data.msg);
       setFormData({ name: '', email: '', message: '' });
     } catch (err) {

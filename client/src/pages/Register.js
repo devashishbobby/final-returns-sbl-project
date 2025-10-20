@@ -5,6 +5,19 @@ import axios from 'axios';
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
 import './AuthForm.css';
 import AuthLayout from '../components/AuthLayout'; // <-- Import the new layout
+import api from '../utils/api';
+
+const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // 2. Use 'api' and only provide the endpoint
+      await api.post('/auth/register', { name, email, password }); 
+      alert('Registration successful! Please log in.');
+      navigate('/login');
+    } catch (err) {
+      alert(err.response?.data?.message || 'An error occurred.');
+    }
+};
 
 const Register = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });

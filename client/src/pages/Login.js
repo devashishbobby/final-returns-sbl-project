@@ -4,6 +4,20 @@ import { useNavigate, Link } from 'react-router-dom'; // Import Link
 import axios from 'axios';
 import './AuthForm.css';
 import AuthLayout from '../components/AuthLayout'; // <-- Import the new layout
+import api from '../utils/api';
+
+
+const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // 2. Use 'api' and only provide the endpoint
+      const res = await api.post('/auth/login', { email, password });
+      localStorage.setItem('token', res.data.token);
+      navigate('/dashboard');
+    } catch (err) {
+      alert(err.response?.data?.message || 'An error occurred.');
+    }
+};
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
