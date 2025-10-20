@@ -20,23 +20,24 @@ connectDB();
 
 // --- START: CORRECT CORS CONFIGURATION ---
 const allowedOrigins = [
-  'http://localhost:3000', // For your local development
-  'https://final-returns-sbl-project.vercel.app' // Your live frontend URL
+  'http://localhost:3000',
+  'https://final-returns-sbl-project.vercel.app'
 ];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests if origin is in our list or if there's no origin (like Postman)
     if (allowedOrigins.includes(origin) || !origin) {
       callback(null, true);
     } else {
       callback(new Error('This origin is not allowed by CORS'));
     }
-  }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'], // Explicitly allow methods
+  allowedHeaders: ['Content-Type', 'Authorization'],      // Explicitly allow headers
 };
 
-app.use(cors(corsOptions)); // Use the specific options
-// --- END: CORRECT CORS CONFIGURATION ---
+app.use(cors(corsOptions));
+// --- END: ENHANCED CORS CONFIGURATION ---
 
 app.use(express.json());
 
