@@ -113,4 +113,35 @@ router.put('/settings', authMiddleware, async (req, res) => {
   }
 });
 
+router.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ message: 'Invalid Credentials' });
+        
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ message: 'Invalid Credentials' });
+        
+        const payload = { user: { id: user.id } };
+        
+        // --- THIS IS THE CRITICAL DIAGNOSTIC LOG ---
+        const secret = process.env.JWT_SECRET;
+        console.log(`--- LOGIN ROUTE: Signing token with secret: "${secret}" ---`);
+        // ---------------------------------------------
+        
+        jwt.sign(
+            payload,
+            secret, // Use the variable we just logged
+            { expiresIn: '5h' },
+            (err, token) => {
+                if (err) throw err;
+                res.json({ token });
+            }
+        );
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server error');
+    }
+});
+
 module.exports = router;
