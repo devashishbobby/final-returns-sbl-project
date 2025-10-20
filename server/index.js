@@ -1,35 +1,32 @@
-// server/index.js -- FINAL, SIMPLIFIED CORS FIX
-
+// 1. Import dependencies
 const express = require('express');
 const connectDB = require('./config/db');
 const cors = require('cors');
-require('dotenv').config();
 
-// Initialize Express App
+// 2. NEW: Conditional dotenv configuration
+// This is a professional best practice. It loads our local .env file ONLY in development.
+// In production (on Render), we will rely on the variables set in the dashboard.
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
+// 3. Initialize Express App
 const app = express();
 
-// Connect to Database
+// 4. Connect to Database
 connectDB();
 
-// --- Middleware ---
-
-// 1. CORS: This MUST come before your API routes.
-// We are using the default, most permissive configuration.
+// 5. Configure Middleware
 app.use(cors());
-
-// 2. Body Parser: To accept JSON data.
 app.use(express.json());
 
-
-// --- API Routes ---
-app.get('/', (req, res) => res.send('ProTrack API Running')); // This is the old test route
+// 6. Define API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/payment', require('./routes/paymentRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
 
-
-// --- Server Listener ---
+// 7. Start Server
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
