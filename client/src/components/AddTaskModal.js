@@ -1,19 +1,20 @@
-// src/components/AddTaskModal.js
 import React, { useState } from 'react';
 import './AddTaskModal.css';
 
 const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
   const [title, setTitle] = useState('');
+  const [subject, setSubject] = useState(''); // <-- NEW: State to hold the subject
 
   if (!isOpen) {
-    return null; // Don't render anything if the modal is closed
+    return null;
   }
 
   const handleSubmit = () => {
     if (title.trim()) {
-      onAddTask(title); // Pass the new title to the parent component
-      setTitle(''); // Reset input
-      onClose(); // Close the modal
+      onAddTask(title, subject); // <-- Pass BOTH title and subject back
+      setTitle('');
+      setSubject(''); // <-- Reset the subject field after submission
+      onClose();
     }
   };
 
@@ -24,10 +25,18 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
         <input
           type="text"
           className="modal-input"
-          placeholder="What's the next big thing?"
+          placeholder="Task title (e.g., Read Chapter 5)"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          autoFocus // Automatically focus the input field
+          autoFocus
+        />
+        {/* --- NEW: Input field for the subject --- */}
+        <input
+          type="text"
+          className="modal-input"
+          placeholder="Subject (e.g., Physics, Project X)"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
         />
         <div className="modal-actions">
           <button className="modal-btn cancel-btn" onClick={onClose}>
@@ -43,3 +52,4 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
 };
 
 export default AddTaskModal;
+

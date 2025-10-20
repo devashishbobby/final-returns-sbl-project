@@ -6,6 +6,28 @@
   padding: 2rem;
 }
 
+.task-selector {
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.task-selector select {
+    width: 100%;
+    padding: 12px;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: #E0E0E0;
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.task-selector select:focus {
+    outline: none;
+    border-color: #FF7A00;
+}
+
 .timer-modes {
   display: flex;
   gap: 1rem;
@@ -20,12 +42,15 @@
   border-radius: 20px;
   font-size: 0.9rem;
   cursor: pointer;
+  /* --- NEW: Add transition --- */
   transition: all 0.2s ease-in-out;
 }
 
 .mode-btn:hover {
     border-color: #666;
     color: #E0E0E0;
+    /* --- NEW: Add enlarge effect --- */
+    transform: scale(1.05);
 }
 
 .mode-btn.active {
@@ -53,17 +78,20 @@
   font-size: 1.2rem;
   font-weight: bold;
   cursor: pointer;
-  min-width: 120px; /* Ensures the button doesn't change size between Start/Pause */
+  min-width: 120px;
+  /* --- NEW: Add transition --- */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
+
+/* --- NEW: Add hover effect for the main control button --- */
+.control-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 122, 0, 0.6);
+}
+
 
 .start-btn {
   background-color: #FF7A00;
   color: #121212;
 }
 
-/* Add this to the bottom of PomodoroTimer.css */
-.session-counter {
-  margin-top: 1rem;
-  color: #aaa;
-  font-size: 0.9rem;
-}

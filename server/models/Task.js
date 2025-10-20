@@ -1,4 +1,3 @@
-// server/models/Task.js
 const mongoose = require('mongoose');
 
 const TaskSchema = new mongoose.Schema(
@@ -15,7 +14,15 @@ const TaskSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    // Note: createdAt is now handled automatically by timestamps option below
+    // --- NEW FIELDS ---
+    subject: {
+      type: String,
+      default: 'General', // A default category if the user doesn't provide one
+    },
+    timeSpent: {
+      type: Number, // We will store this in minutes
+      default: 0,
+    },
   },
   {
     timestamps: true, // This automatically adds createdAt and updatedAt fields

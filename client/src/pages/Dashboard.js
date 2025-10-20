@@ -1,4 +1,3 @@
-// src/pages/Dashboard.js -- FINAL VERSION WITH PERSISTENT SETTINGS
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
@@ -8,6 +7,7 @@ import AddTaskModal from '../components/AddTaskModal';
 import PomodoroTimer from '../components/PomodoroTimer';
 import SettingsModal from '../components/SettingsModal';
 import Sidebar from '../components/Sidebar';
+import LogTimeModal from '../components/LogTimeModal';
 
 const getGreeting = () => {
   const currentHour = new Date().getHours();
@@ -23,45 +23,40 @@ const Dashboard = () => {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLogTimeModalOpen, setIsLogTimeModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+
   const navigate = useNavigate();
   const greeting = getGreeting();
 
-  // Initialize with defaults, will be overwritten by fetched data
   const [timerSettings, setTimerSettings] = useState({
-    focus: 25,
-    shortBreak: 5,
-    longBreak: 15,
+    focus: 25, shortBreak: 5, longBreak: 15,
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch user info (which now includes settings) and tasks concurrently
-        const [userRes, tasksRes] = await Promise.all([api.get('/auth/me'), api.get('/tasks')]);
-        
+  const fetchData = async () => {
+    try {
+      if (!user) {
+        const userRes = await api.get('/auth/me');
         setUser(userRes.data);
-        setTasks(tasksRes.data);
+        if (userRes.data.settings) { setTimerSettings(userRes.data.settings); }
+      }
+      const tasksRes = await api.get('/tasks');
+      setTasks(tasksRes.data);
+      setLoading(false);
+    } catch (err) { handleLogout(); }
+  };
 
-        // --- NEW: Load saved settings from the user object ---
-        if (userRes.data.settings) {
-          setTimerSettings(userRes.data.settings);
-        }
-
-        setLoading(false);
-      } catch (err) { handleLogout(); }
-    };
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
 
-  const handleAddTask = async (title) => {
+  const handleAddTask = async (title, subject) => {
     try {
-      const res = await api.post('/tasks', { title });
-      setTasks([...tasks, res.data]);
+      await api.post('/tasks', { title, subject });
+      fetchData();
     } catch (err) { console.error('Failed to add task', err); }
   };
 
@@ -78,22 +73,38 @@ const Dashboard = () => {
       setTasks(tasks.map(task => (task._id === taskId ? res.data : task)));
     } catch (err) { console.error('Failed to update task', err); }
   };
-  
-  
-  // --- UPGRADED: Save settings function now calls the API ---
+
   const handleSaveSettings = async (newSettings) => {
     try {
-      // Send the new settings to our backend endpoint
       const res = await api.put('/auth/settings', newSettings);
-      
-      // Update the local state with the settings confirmed by the server
-      setTimerSettings(res.data);
-      
-      // Close the modal
+      setTimerSettings(res.data.settings);
       setIsSettingsModalOpen(false);
+    } catch (err) { console.error('Failed to save settings', err); }
+  };
+  
+  const handleOpenLogTimeModal = (task) => {
+    setSelectedTask(task);
+    setIsLogTimeModalOpen(true);
+  };
+
+  const handleLogTime = async (duration) => {
+    if (!selectedTask) return;
+    try {
+      await api.put(`/tasks/${selectedTask._id}/log-time`, { duration });
+      fetchData();
+    } catch (err) { console.error('Failed to log time', err); }
+  };
+
+  // --- NEW: Function to handle editing a task ---
+  const handleUpdateTask = async (taskId, updates) => {
+    try {
+      // Call the general purpose PUT endpoint with the new title and subject
+      const res = await api.put(`/tasks/${taskId}`, updates);
+      // Update the task list with the new data from the server
+      setTasks(tasks.map(task => (task._id === taskId ? res.data : task)));
     } catch (err) {
-      console.error('Failed to save settings', err);
-      alert('Could not save settings. Please try again.');
+      console.error('Failed to update task', err);
+      alert('Could not update task. Please try again.');
     }
   };
 
@@ -101,12 +112,11 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-        <Sidebar 
-            isOpen={isSidebarOpen}
-            onClose={() => setIsSidebarOpen(false)}
-            handleLogout={handleLogout}
-        />
-
+      <Sidebar 
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        handleLogout={handleLogout}
+      />
       <div className="dashboard-content">
         <header className="dashboard-header">
           <div className="header-actions">
@@ -122,12 +132,18 @@ const Dashboard = () => {
         </header>
 
         <main>
-          <PomodoroTimer settings={timerSettings} />
+          <PomodoroTimer 
+            settings={timerSettings} 
+            tasks={tasks}
+            onSessionComplete={fetchData}
+          />
           <TaskList
             tasks={tasks}
             onOpenModal={() => setIsTaskModalOpen(true)}
             onDeleteTask={handleDeleteTask}
-            onToggleTask={handleToggleTask} 
+            onToggleTask={handleToggleTask}
+            onOpenLogTimeModal={handleOpenLogTimeModal}
+            onUpdateTask={handleUpdateTask} // <-- Pass the new function down
           />
         </main>
       </div>
@@ -143,8 +159,15 @@ const Dashboard = () => {
         currentSettings={timerSettings}
         onSave={handleSaveSettings}
       />
+      <LogTimeModal
+        isOpen={isLogTimeModalOpen}
+        onClose={() => setIsLogTimeModalOpen(false)}
+        onLogTime={handleLogTime}
+        taskTitle={selectedTask?.title}
+      />
     </div>
   );
 };
 
 export default Dashboard;
+

@@ -92,23 +92,21 @@ router.get('/me', authMiddleware, async (req, res) => {
 router.put('/settings', authMiddleware, async (req, res) => {
   const { focus, shortBreak, longBreak } = req.body;
 
+  // Basic validation to ensure we have numbers
+  if (typeof focus !== 'number' || typeof shortBreak !== 'number' || typeof longBreak !== 'number') {
+    return res.status(400).json({ msg: 'Invalid settings format.' });
+  }
+
   try {
-    // The user's ID is available from the authMiddleware (req.user.id)
-    const user = await User.findById(req.user.id);
+    // req.user is the full user document from our upgraded authMiddleware
+    const user = req.user;
 
-    if (!user) {
-      return res.status(404).json({ msg: 'User not found' });
-    }
-
-    // Update the settings object
     user.settings = { focus, shortBreak, longBreak };
 
-    // Save the updated user document to the database
     await user.save();
 
-    // Send back the newly saved settings
-    res.json(user.settings);
-
+    // Send back the updated user object (excluding password)
+    res.json(user);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
