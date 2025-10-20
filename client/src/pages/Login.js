@@ -13,7 +13,7 @@ const Login = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5001/api/auth/login', { email, password });
+      const res = await axios.post('https://final-returns-sbl-project.vercel.app/login', { email, password });
 localStorage.setItem('token', res.data.token);
 console.log('--- TOKEN SAVED ---', res.data.token); // <-- ADD THIS LINE
 navigate('/dashboard');
