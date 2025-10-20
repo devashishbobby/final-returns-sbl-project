@@ -124,14 +124,22 @@ router.post('/login', async (req, res) => {
         
         const payload = { user: { id: user.id } };
         
-        // --- THIS IS THE CRITICAL DIAGNOSTIC LOG ---
         const secret = process.env.JWT_SECRET;
-        console.log(`--- LOGIN ROUTE: Signing token with secret: "${secret}" ---`);
+        
+        // --- THIS IS THE CRITICAL SAFETY CHECK ---
+        // If the secret key is missing for any reason (like a cold start),
+        // we must not create a token. Instead, we throw a server error.
+        if (!secret) {
+            console.error('FATAL ERROR: JWT_SECRET is not defined on the server.');
+            return res.status(500).send('Server configuration error.');
+        }
         // ---------------------------------------------
+        
+        console.log(`--- LOGIN ROUTE: Signing token with a valid secret. ---`);
         
         jwt.sign(
             payload,
-            secret, // Use the variable we just logged
+            secret, // Use the validated secret
             { expiresIn: '5h' },
             (err, token) => {
                 if (err) throw err;
