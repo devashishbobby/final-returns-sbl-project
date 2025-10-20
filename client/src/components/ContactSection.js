@@ -1,7 +1,7 @@
 // client/src/components/ContactSection.js
 
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api'; // <-- 1. Import your central api file
 import './ContactSection.css';
 
 const ContactSection = () => {
@@ -22,22 +22,22 @@ const ContactSection = () => {
     setStatusMessage('Sending...');
 
     try {
-      const body = { name, email, message };
-      const res = await axios.post('https://final-returns-sbl-project.vercel.app/contact', body);
-      setStatusMessage(res.data.msg);
-      setFormData({ name: '', email: '', message: '' });
+      // <-- 2. Use the 'api' instance and provide only the endpoint
+      const res = await api.post('/contact', { name, email, message });
+      
+      setStatusMessage(res.data.msg || 'Message sent successfully!'); // Use the response message
+      setFormData({ name: '', email: '', message: '' }); // Clear the form
     } catch (err) {
       console.error('Contact form submission error:', err);
-      setStatusMessage('Sorry, something went wrong. Please try again.');
+      const errorMsg = err.response?.data?.msg || 'Sorry, something went wrong. Please try again.';
+      setStatusMessage(errorMsg);
     }
   };
 
   return (
-    // Your original outer div had different styling, let's match your CSS file
     <section id="contact" className="contact-section">
       <h2>Contact Us</h2>
       <form className="contact-form" onSubmit={onSubmit}>
-        {/* --- THIS DIV IS THE KEY TO FIXING THE LAYOUT --- */}
         <div className="form-row">
           <input
             type="text"
@@ -63,7 +63,6 @@ const ContactSection = () => {
           onChange={onChange}
           required
         ></textarea>
-        {/* --- Ensure the button class matches your CSS --- */}
         <button type="submit" className="btn-send">
           Send Message
         </button>
