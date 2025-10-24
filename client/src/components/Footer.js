@@ -5,7 +5,7 @@ import './Footer.css';
 const Footer = () => {
   return (
     <footer className="footer-container">
-      <p>© 2025 ProTrack • Built for the Web Dev Lab</p>
+      <p>© 2025 ProTrack • Built for SBL AWT Lab</p>
     </footer>
   );
 };
